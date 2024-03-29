@@ -1,0 +1,119 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.active {
+	color: red;
+	font-weight: bolder;
+}
+button {
+	padding: 4px;
+	border-radius: 5px;
+	padding: 4px;
+}
+form {
+	max-width: 300px;
+	margin: 30px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+form input {
+	padding: 3px;
+}
+label {
+	margin: 5px;
+}
+.hidden {
+	display: none;
+}
+
+/* sign up */
+.wrongPassword,
+.wrongPassword:focus {
+	outline: red 2px solid;
+}
+
+.profileNavBar {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 20px;
+	padding: 10px;
+	background-color: mediumturquoise;
+}
+
+.profileNavBar .tab {
+	text-decoration: none;
+	border: 1px black solid;
+	padding: 3px;
+	font-size: 1.2rem;
+	font-weight: 500;
+	background-color: rgb(2, 253, 161);
+}
+.profileNavBar .active {
+	color: white;
+	background-color: rgb(5, 78, 51);
+}
+
+button:hover {
+	background-color: rgb(180, 181, 181);
+}
+.navBar {
+	font-size: 1.2rem;
+
+	display: flex;
+	justify-content: flex-end;
+	gap: 30px;
+	background-color: rgb(255, 142, 101);
+	padding: 10px;
+}
+
+.activeTab {
+	font-weight: bolder;
+	color: rgb(0, 0, 0);
+}
+
+/* home page */
+.productsPage {
+	display: flex;
+	background-color: rgb(202, 239, 202);
+	flex-wrap: wrap;
+}
+.productsPage > div {
+	background-color: azure;
+	padding: 50px;
+	max-width: 500px;
+}
+
+.productCard,
+.orderProductCard,
+.cartProductCard {
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	gap: 30px;
+	border: 2px black solid;
+	margin: 3px;
+	flex-wrap: wrap;
+}
+.productCard img,
+.orderProductCard img,
+.cartProductCard img,
+.wishlistCard img {
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
+}
+.productCard p {
+	font-size: 0.9rem;
+	color: gray;
+}
+
+.cartProductCard .buttonDiv {
+	justify-self: flex-end;
+	display: flex;
+	gap: 5px;
+}
