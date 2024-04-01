@@ -1,18 +1,18 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "./navbar";
-// import { setProducts } from "../../../redux/productsSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../../../redux/productsSlice";
 import { fetchCartProducts, exportCartProducts } from "../../../redux/cartProductsSlice";
 import { fetchOrderProducts } from "../../../redux/orderProductsSlice";
 import { fetchWislist } from "../../../redux/wishlist";
+import { fetchPlacedOrders, fetchSellerProducts } from "../../../redux/sellerSlice";
 
 export default function MainPage() {
 	const navigate = useNavigate();
-	const uid = useSelector((store) => {
-		return store.user.uid;
+	const { privilege, uid } = useSelector((store) => {
+		return store.user;
 	});
 	const cartProducts = useSelector((store) => {
 		return store.cartProducts;
@@ -26,6 +26,11 @@ export default function MainPage() {
 			dispatch(fetchCartProducts(uid));
 			dispatch(fetchOrderProducts(uid));
 			dispatch(fetchWislist(uid));
+
+			if (privilege === "seller") {
+				dispatch(fetchSellerProducts({ uid }));
+				dispatch(fetchPlacedOrders({ uid }));
+			}
 		}
 	}, [uid]);
 
@@ -48,8 +53,6 @@ export default function MainPage() {
 			<Outlet />
 		</div>
 	) : (
-		<div>
-			<h1>Please login before you access mainPage</h1>
-		</div>
+		<></>
 	);
 }

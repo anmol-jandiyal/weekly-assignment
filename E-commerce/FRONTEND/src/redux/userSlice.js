@@ -11,6 +11,8 @@ export const userLogin = createAsyncThunk("user/Login", async ({ loginData, navi
 			withCredentials: true,
 		});
 
+		console.log(res.data);
+
 		navigate("/mainPage");
 		return res.data;
 	} catch (err) {
@@ -26,23 +28,26 @@ export const userSignup = createAsyncThunk("user/Signup", async ({ signUpData, n
 		return Promise.reject({ error: "Password Length Must Be Greater Than 8" });
 	}
 	if (signUpData.userName && signUpData.password === signUpData.confirmPassword && signUpData.name) {
-		delete signUpData.confirmPassword;
+		// delete signUpData.confirmPassword;
 
 		try {
 			const response = await axios.post(BASEURL + "users/signup", signUpData);
 			navigate("/login");
 			return response.data;
 		} catch (err) {
-			console.log("error in login", err);
+			console.log("error while signing upd", err);
+			alert(err.response.data.error);
 			return Promise.reject({ error: err });
 		}
 	}
+	return Promise.reject({ error: "Error" });
 });
 
 const userSlice = createSlice({
 	name: "user",
 
 	initialState: {
+		privilege: "user",
 		loginSignupStatus: "",
 		uid: null,
 	},
@@ -51,11 +56,13 @@ const userSlice = createSlice({
 			state.uid = null;
 
 			localStorage.removeItem("uid");
+			localStorage.removeItem("privilege");
 		},
 
-		setUid: (state, action) => {
-			const { uid } = action.payload;
+		setUser: (state, action) => {
+			const { uid, privilege } = action.payload;
 			state.uid = uid;
+			state.privilege = privilege;
 		},
 	},
 	extraReducers: (builder) => {
@@ -65,29 +72,26 @@ const userSlice = createSlice({
 			})
 			.addCase(userLogin.fulfilled, (state, action) => {
 				state.uid = action.payload.user.uid;
+				state.privilege = action.payload.user.privilege;
 				state.loginSignupStatus = action.payload.message;
 				localStorage.setItem("uid", action.payload.user.uid);
+				localStorage.setItem("privilege", action.payload.user.privilege);
 			})
+
 			.addCase(userLogin.rejected, (state, action) => {
-				console.log("login rejected", action.payload);
 				state.loginSignupStatus = "login rejected";
 			})
 			.addCase(userSignup.pending, (state, action) => {
-				console.log("signup pending", action.payload);
-
 				state.loginSignupStatus = "Signing Up..............";
 			})
 			.addCase(userSignup.fulfilled, (state, action) => {
-				console.log("signup fulfilled", action.payload);
 				state.loginSignupStatus = "Successful Signup";
 			})
 			.addCase(userSignup.rejected, (state, action) => {
-				console.log("signup rejected", action.payload);
-
 				state.loginSignupStatus = "signup error";
 			});
 	},
 });
 
 export default userSlice.reducer;
-export const { setUser, userLogOut, setUid } = userSlice.actions;
+export const { setUser, userLogOut } = userSlice.actions;

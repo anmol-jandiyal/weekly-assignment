@@ -1,9 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
-import { addProductToCart } from "../../../redux/cartProductsSlice";
-import { updateWishlist } from "../../../redux/wishlist";
+import { RiDeleteBinLine, RiPencilLine } from "@remixicon/react";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { deleteProducts } from "../../../redux/sellerSlice";
 
-export default function HomeProductCard({ product }) {
+export default function SellerProductCard({ product }) {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
+	const { setNewProductDetails } = useOutletContext();
+
 	const uid = useSelector((store) => {
 		return store.user.uid;
 	});
@@ -20,23 +25,23 @@ export default function HomeProductCard({ product }) {
 			</div>
 			<div style={{ display: "flex", gap: "40px", margin: "5px" }}>
 				<button
-					disabled={product.stock === 0 ? true : false}
 					onClick={() => {
-						dispatch(addProductToCart({ product: { ...product } }));
+						setNewProductDetails(product);
+						navigate("/mainPage/seller/products/edit");
 					}}>
-					Add To Cart
+					<RiPencilLine />
 				</button>
 
 				<button
 					onClick={() => {
-						dispatch(updateWishlist({ product: product, uid: uid }));
+						dispatch(deleteProducts({ productId: product._id, uid: uid }));
 					}}>
-					wishlist
+					<RiDeleteBinLine />
 				</button>
 			</div>
 
 			<p>{product.description}</p>
-			<h4>Sell By: {product.sellerDetails?.name}</h4>
+			<h4 style={{ color: product.stock <= 0 ? "red" : "blue" }}>stock : {product.stock}</h4>
 		</div>
 	);
 }

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { userSignup } from "../../../redux/userSlice";
 import { useDispatch } from "react-redux";
 
-const initialState = { password: "", confirmPassword: "", name: "", email: "", mismatchStyle: "", privilege: "non-admin" };
+const initialState = { password: "", confirmPassword: "", name: "", email: "", mismatchStyle: "", privilege: "user" };
 
 function reducer(state, action) {
 	state.mismatchClass = "";
@@ -86,7 +86,8 @@ export default function SignUp() {
 					onChange={(e) => {
 						dispatch({ type: "CHANGE_PRIVILEGE", payload: e.target.value });
 					}}>
-					<option value="non-admin">Non-Admin</option>
+					<option value="user">User</option>
+					<option value="seller">Seller</option>
 					<option value="admin">Admin</option>
 				</select>
 				<button>Submit</button>

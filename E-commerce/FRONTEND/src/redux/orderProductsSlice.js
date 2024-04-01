@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { exportCartProducts } from "./cartProductsSlice";
 import axios from "axios";
 
 const BASEURL = import.meta.env.VITE_URL;
@@ -18,9 +19,9 @@ export const fetchOrderProducts = createAsyncThunk("cart/fetchOrderProducts", as
 	}
 });
 
-export const exportOrderDetails = createAsyncThunk("user/orderToDB", async ({ uid, cartItems, totalPrice }) => {
+export const exportOrderDetails = createAsyncThunk("user/orderToDB", async ({ uid, cartItems, totalPrice, dispatch }) => {
 	const orderItems = cartItems.map((item) => {
-		return { product: item.product._id, count: item.count };
+		return { product: item.product._id, seller: item.product.seller ?? item.product.sellerDetails._id, count: item.count };
 	});
 
 	try {
@@ -38,9 +39,11 @@ export const exportOrderDetails = createAsyncThunk("user/orderToDB", async ({ ui
 			}
 		);
 		const newOrder = { items: cartItems, totalPrice: totalPrice };
+
 		return newOrder;
 	} catch (err) {
 		console.log(err);
+		alert("Stock Not Available");
 		return Promise.reject(err);
 	}
 });
@@ -67,7 +70,11 @@ const orderProductsSlice = createSlice({
 				state.fetchState = "Error while Fetching orderItems.....";
 			})
 			.addCase(exportOrderDetails.fulfilled, (state, action) => {
-				state.orders.push({ ...action.payload, date: new Date() });
+				const date = new Date().toString();
+				state.orders.push({ ...action.payload, date: date });
+			})
+			.addCase(exportOrderDetails.rejected, (state, action) => {
+				console.log("stocks not available");
 			});
 	},
 });

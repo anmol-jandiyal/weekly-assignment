@@ -32,10 +32,8 @@ export default function PlaceOrderPage() {
 						<button
 							onClick={(e) => {
 								e.preventDefault();
-								dispatch(exportOrderDetails({ uid: uid, cartItems: cart.cartProductsArray, totalPrice: cart.totalPrice }));
-
+								dispatch(exportOrderDetails({ uid: uid, cartItems: cart.cartProductsArray, totalPrice: cart.totalPrice, dispatch }));
 								dispatch(exportCartProducts({ uid: uid, cartItems: [], totalPrice: 0, cartUpdated: false }));
-								dispatch;
 							}}>
 							Order
 						</button>

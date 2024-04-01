@@ -4,10 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
-import productRoute from "./routers/productRoute.js";
-import signLogRoute from "./routers/signupLoginRoute.js";
-import cartRoute from "./routers/cartRoutes.js";
-import userRoute from "./routers/userRoutes.js";
+import routers from "./routers/index.js";
 
 dotenv.config();
 
@@ -18,10 +15,11 @@ const server = express();
 server.use(express.json());
 server.use(cookieParser());
 server.use(cors({ credentials: true, origin: true }));
-server.use("/products", productRoute);
-server.use("/users", signLogRoute);
-server.use("/user", userRoute);
-server.use("/cart", cartRoute);
+server.use("/products", routers.productRoute);
+server.use("/users", routers.signLogRoute);
+server.use("/seller", routers.sellerRoute);
+server.use("/user", routers.userRoute);
+server.use("/cart", routers.cartRoute);
 
 mongoose
 	.connect(MONGO_URL)

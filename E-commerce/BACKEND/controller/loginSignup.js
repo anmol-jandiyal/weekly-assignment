@@ -1,3 +1,4 @@
+import Seller from "../models/seller.js";
 import User from "../models/users.js";
 import { setUser, getUser } from "./auth.js";
 import bcrypt from "bcrypt";
@@ -5,10 +6,14 @@ import bcrypt from "bcrypt";
 //<-------------TO ADD NEW USER TO THE USER DATABASE-------------->
 async function userSignUp(req, res) {
 	const userData = req.body;
+	let newEntry;
+	if (req.body.privilege === "seller") {
+		newEntry = new Seller(userData);
+	} else {
+		newEntry = new User(userData);
+	}
 
-	const newUser = new User(userData);
-
-	newUser
+	newEntry
 		.save()
 		.then((doc) => {
 			return res.status(201).json({ message: "Successful Addition", doc: doc });
@@ -31,11 +36,16 @@ async function userLogin(req, res) {
 	//checking if userName and password present in the body or not
 	if (loginData.userName && loginData.password) {
 		try {
-			const userDoc = await User.findOne({ userName: loginData.userName });
+			let userDoc;
+
+			if (req.body.privilege === "seller") {
+				userDoc = await Seller.findOne({ userName: { $regex: loginData.userName, $options: "i" } });
+			} else {
+				userDoc = await User.findOne({ userName: loginData.userName });
+			}
 
 			if (userDoc) {
 				const validateBool = await bcrypt.compare(loginData.password, userDoc.password);
-
 				if (validateBool) {
 					const token = setUser(userDoc);
 					res.cookie("uid", token);
@@ -81,7 +91,12 @@ async function anyOneLoggedIn(req, res, next) {
 
 		// check if user is valid or not
 		try {
-			const userDoc = await User.findById(user._id);
+			let userDoc;
+			if (user.privilege === "seller") {
+				userDoc = await Seller.findById(user._id);
+			} else {
+				userDoc = await User.findById(user._id);
+			}
 
 			if (userDoc) {
 				return res.status(409).json({ message: "Not able to login because other user already logged in" });
@@ -106,7 +121,12 @@ async function restrictToLoggedUser(req, res, next) {
 
 	// check if user is valid or not
 	try {
-		const userDoc = await User.findById(user._id);
+		let userDoc;
+		if (user.privilege === "seller") {
+			userDoc = await Seller.findById(user._id);
+		} else {
+			userDoc = await User.findById(user._id);
+		}
 
 		if (!userDoc) {
 			//redirect to login page
@@ -123,11 +143,17 @@ async function restrictToLoggedUser(req, res, next) {
 
 async function authorized(req, res, next) {
 	const uid = req.header("Authorization");
+	const user = getUser(uid);
 
 	try {
-		const userDoc = await User.findById(user._id);
+		let userDoc;
+		if (user.privilege === "seller") {
+			userDoc = await Seller.findById(user._id);
+		} else {
+			userDoc = await User.findById(user._id);
+		}
 
-		if (userDoc && userDoc.privilege !== "admin") {
+		if (userDoc && userDoc.privilege !== "seller") {
 			return res.status(401).json({ message: "unauthorized access! ", code: "ADMIN_PRIVILEGE_NEEDED" });
 		}
 	} catch (err) {

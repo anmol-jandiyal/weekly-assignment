@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-const userSchema = mongoose.Schema({
+export const userSchema = mongoose.Schema({
 	name: { type: String, required: true, trim: true, lowercase: true },
 
 	userName: { type: String, required: true, unique: true, index: true, trim: true, lowercase: true },
 
 	password: { type: String, required: true, minLength: [8, "min length of password must be greater than 8"] },
 
-	privilege: { type: String, enum: ["admin", "non-admin"], default: "non-admin" },
+	privilege: { type: String, enum: ["admin", "user", "seller"], default: "user" },
 
 	wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "product" }],
 
@@ -17,6 +17,14 @@ const userSchema = mongoose.Schema({
 			items: [
 				{
 					product: { type: mongoose.Schema.Types.ObjectId, ref: "product" },
+					/* product: {
+						title: { type: String, required: true, trim: true },
+						description: { type: String, required: true, trim: true },
+						price: { type: Number, required: true },
+						brand: { type: String, default: "Undefined" },
+						category: { type: String, required: true },
+						thumbnail: { type: String, required: true },
+					}, */
 					count: { type: Number, default: 1 },
 				},
 			],
